@@ -22,8 +22,8 @@ public class TestCollection {
 
         Media foundTestBook = HarryPotterSeries.findMediaInCollection("Harry Potter and the Sorcerer's Stone");
         Media foundTestBook2 = HarryPotterSeries.findMediaInCollection(HarryPotter2.Title);
-        Menu.displayMessage(foundTestBook.Title);
-        Menu.displayMessage(foundTestBook2.Title);
+        Messages.displayMessage(foundTestBook.Title);
+        Messages.displayMessage(foundTestBook2.Title);
 
     }
 }

@@ -10,7 +10,7 @@ package Biblioteca;
 public class Customer {
     String UserName;
     String Password;
-    Boolean LoggedIn;
+    Boolean LoggedIn = false;
 
     boolean logIn(String EnteredName, String EnteredPassword)
     {
@@ -27,7 +27,7 @@ public class Customer {
 
     boolean checkNumber()
     {
-        if (LoggedIn=true)
+        if (LoggedIn==true)
         {
             return true;
         }
@@ -35,7 +35,7 @@ public class Customer {
             return false;
     }
 
-    void setUserName(String NewUserName)
+    public void setUserName(String NewUserName)
     {
         UserName = NewUserName;
     }

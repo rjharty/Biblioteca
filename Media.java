@@ -21,7 +21,7 @@ public class Media {
             return MessageIfUnAvailable;
         }
 
-            IsAvailable=false;
+            IsAvailable=true;
             return MessageIfAvailable;
     }
 

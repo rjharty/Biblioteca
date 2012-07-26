@@ -1,5 +1,7 @@
 package Biblioteca;
 
+import sun.tools.tree.IfStatement;
+
 import java.util.Scanner;
 
 /**
@@ -10,23 +12,19 @@ import java.util.Scanner;
  * To change this template use File | Settings | File Templates.
  */
 public class Menu {
-    private static final String GREETING = "Welcome to Biblioteca. Please select an option 1-6.";
-    private static final String INVALIDOPTION = "Select a valid option!!";
-    private static final String OPTION1 = "1. View Library Book collection";
-    private static final String OPTION2 ="2. Reserve a book";
-    private static final String OPTION3 ="3. View Movie Collection";
-    private static final String OPTION4 ="4. Reserve a movie";
-    private static final String OPTION5 = "5. Log In";
-    private static final String OPTION6 ="6. Check Library Number";
-    private static final String MEDIASELECTIONTITLE = "Please type in the name of the item you wish to reserve";
-    public static final String INVALIDTITLE = "This does not exist in collection.";
 
-    static void displayMessage(String MessageForUser){
-        System.out.println(MessageForUser);
+    static Customer DefaultCustomer = new Customer();
+    void defineCustomer(){
+        DefaultCustomer.setUserName("Default Username");
+        DefaultCustomer.setPassWord("Default Password");
     }
 
-    void printGreeting(){
-        displayMessage(GREETING);
+    void startLibrary(){
+        defineCustomer();
+        Messages.displayMessage(Messages.GREETING);
+        for (String MenuOption: Messages.MENUOPTIONS){
+            Messages.displayMessage(MenuOption);
+        }
     }
 
     int gatherInput(){
@@ -36,39 +34,65 @@ public class Menu {
     }
 
     void checkOutItem(Collection CurrentCollection){
-        displayMessage(MEDIASELECTIONTITLE);
+        Messages.displayMessage(Messages.MEDIASELECTIONTITLE);
         Scanner scanner = new Scanner(System.in);
         String TitleOfMedia = scanner.nextLine();
         Media MediaToCheckOut;
         MediaToCheckOut = CurrentCollection.findMediaInCollection(TitleOfMedia);
         if (MediaToCheckOut == null)  {
-            displayMessage(INVALIDTITLE);
+            Messages.displayMessage(Messages.INVALIDTITLE);
         }
         else
         {
-             displayMessage(MediaToCheckOut.checkOutMedia()); // has two possible results: Available or Not Available
+             Messages.displayMessage(MediaToCheckOut.checkOutMedia()); // has two possible results: Available or Not Available
         }
     }
 
-    boolean logInUser(){
+    Customer findAndDefineCustomer(CustomerDataBase Database, String UserName)
+    {
+        Customer Cust = Database.findCustomerInDataBase(UserName);
+        if (Cust.UserName.equals("Invalid"))
+        {
+            Cust.Password = "Invalid";
+            Cust.LoggedIn = false;
+        }
+        return Cust;
+    }
+
+    Customer logInUser(CustomerDataBase CurrentCustomerDataBase){
         Scanner selectionReader = new Scanner(System.in);
+        Messages.displayMessage("Enter User Name:");
         String ScannedUserName = selectionReader.nextLine();
+        Messages.displayMessage("Enter Password");
         String ScannedUserPassword = selectionReader.nextLine();
         Customer NewCustomer = new Customer();
-        boolean LogInResult = NewCustomer.logIn(ScannedUserName,ScannedUserPassword);
-        return LogInResult;
+        NewCustomer = findAndDefineCustomer(CurrentCustomerDataBase,ScannedUserName);
+
+    Boolean LogInResult = NewCustomer.logIn(ScannedUserName,ScannedUserPassword);
+        if (LogInResult == true)
+        {
+            DefaultCustomer = NewCustomer;
+            Messages.displayMessage("You are now logged in.");
+        }
+        else {
+            Messages.displayMessage("Invalid login information.");
+        }
+        return NewCustomer;
+
     }
 
     void checkLibraryNumber(){
-        if(logInUser() == true)
+        if(DefaultCustomer.LoggedIn == true)
         {
-
+           Messages.displayMessage(DefaultCustomer.UserName);
         }
-
+        else
+           Messages.displayMessage("Please see Librarian.");
     }
 
-    void processInput(int UserSelection, Collection CurrentBookCollection, Collection CurrentMovieCollection)
+    void processInput(int UserSelection, Collection CurrentBookCollection, Collection CurrentMovieCollection, CustomerDataBase CurrentCustomerDataBase)
     {
+
         if (UserSelection==1){
             CurrentBookCollection.displayCollection();
         }
@@ -82,11 +106,11 @@ public class Menu {
             checkOutItem(CurrentMovieCollection);
         }
         else if (UserSelection==5) {
-            logInUser();
+            logInUser(CurrentCustomerDataBase);
         }
         else if (UserSelection==6){
            checkLibraryNumber();
         }
-        else displayMessage(INVALIDOPTION);
+        else Messages.displayMessage(Messages.INVALIDOPTION);
     }
 }
